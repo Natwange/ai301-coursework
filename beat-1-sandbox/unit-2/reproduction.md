@@ -2,21 +2,11 @@
 
 Path: `beat-1-sandbox/unit-2/reproduction.md`
 
-Record of your claim and reproduction on the issue you chose in Unit 1, and of the
-evaluation runs that produced `eval-run.txt`. This file is graded at the path above; a copy
-kept anywhere else in the repository is not read.
-
-Complete every labelled field below. Each is graded on its own; content placed under the wrong
-label is not graded.
-
----
-
 ## Your identity upstream
 
 **GitHub username**
 
-[Your GitHub username, exactly as it appears on your profile — no `@`, no profile URL. Your
-comments upstream are identified by this name.]
+Natwange
 
 ---
 
@@ -24,48 +14,91 @@ comments upstream are identified by this name.]
 
 **Claim comment**
 
-[Link to the comment where you claimed the issue. Use the comment's own permalink, not the
-issue page on its own. **Then paste the text of that comment underneath the link** — the
-pasted text is what this field is graded on, so copy across what you actually posted.]
+https://github.com/codepath/pathreview-ai301-fa26-s1/issues/54#issuecomment-5901594707
+
+I'd like to investigate this issue. I'll test the reported leading-whitespace behavior in resume section detection and post a reproduction report with my environment, steps, and results.
 
 **Reproduction comment**
 
-[Link to the comment where you posted your reproduction. It must record the environment
-(OS, relevant versions, code state), steps a stranger could follow, and what you observed.
-**Then paste the text of that comment underneath the link** — the pasted text is what this
-field is graded on, so copy across what you actually posted.]
+https://github.com/codepath/pathreview-ai301-fa26-s1/issues/54#issuecomment-5902651839
+
+I was able to reproduce the leading-whitespace issue in resume section detection.
+
+### Environment
+
+- OS: Windows
+- Python: 3.12.6
+- PathReview commit: `f89c06fc3ff292df2a04a39ac51319d32a76b779`
+- Test runner: pytest 9.1.1
+
+### Steps to reproduce
+
+I created a `ResumeParser` and parsed resume text where the section headings had leading whitespace:
+
+```python
+from ingestion.parsers.resume_parser import ResumeParser
+
+r = ResumeParser()
+
+res = r.parse("""
+    John Smith
+    john@example.com
+
+    Education:
+    - B.S. Computer Science
+
+    Skills: Python
+""")
+
+print(res.metadata["detected_sections"])
+```
+
+### Observed behavior
+
+The output was:
+
+```text
+[]
+```
+
+Even though the input contains the `Education:` and `Skills:` section headings, neither section was detected.
+
+I also ran:
+
+```bash
+python -m pytest tests/unit/test_resume_parser.py -v
+```
+
+The test run completed with:
+
+```text
+5 passed, 5 xfailed
+```
+
+The issue-related tests `test_parse_single_column_resume_text`, `test_parse_resume_no_work_experience`, and `test_detect_sections` were all reported as `XFAIL`.
+
+This reproduces the behavior described in #54: section headings with leading whitespace are not detected.
 
 ## Eval iterations
 
-Answer all four sections. Quote source text directly; paraphrase does not satisfy these
-fields.
-
 **Run history**
 
-[The agreement score of each run you did, in order. A single run is a complete answer if
-only one run occurred. **The last score in your list must match the agreement line in the
-`eval-run.txt` you committed** — that file is the record of your final run.]
+20/20 scored items (bar: 18/20: PASS)
 
 **Package analysis**
 
-[Pick one scored package (`pkg-01` through `pkg-20` — the four `calib-` packages are never
-scored). Name it by id, say what your rubric decided and what the gold label said, and
-explain why your rubric read it that way.]
+`pkg-01` — My rubric decided `accept`, and the gold label was also `accept`. The reproduction report recorded its environment and gave commands that another contributor could run. More importantly, its output directly matched the issue: when exactly one custom header was present, `Content-Type: application/json` was missing. The control run showed that the header appeared correctly without the custom header. Because the evidence supported the stated reproduction and the required checks passed, my rubric returned `accept`.
 
 **Check rationale**
 
-[Quote one check from the `rubric.md` you uploaded to `tools/repro-check/`, exactly as it reads now.
-Then say why it reads that way — what you revised to get there, or what you rejected in
-favour of it.]
+> `| behavior-matches | Repro report's observed output, logs, screenshots, or other artifacts read against the specific behavior described in the issue | The evidence demonstrates the behavior described by the issue, or the report clearly states that the behavior was not reproduced. Evidence of a different or merely adjacent failure does not count as reproducing the issue. | required |`
+
+I made this check required because showing an error is not enough to prove that the specific issue was reproduced. The evidence has to match the behavior described by the issue. I also allowed an honestly documented cannot-reproduce result to pass because the goal is accurate evidence, not forcing every investigation to reproduce the bug.
 
 **Trade-offs**
 
-[Every check gives something up. Any one of these is a complete answer: a package whose
-result it changes, a canary you re-ran with `--only`, a case you accept it will miss, or a
-stated reason nothing changed elsewhere. "Nothing changed, and here is how I know" earns
-the point in full when the reason follows.]
+This check is deliberately strict about matching the issue's specific behavior, so it can reject a report that finds a real problem if that problem is only adjacent to the one described in the issue. I accept that trade-off because a different failure should be investigated separately rather than presented as proof that the original issue was reproduced.
 
 ---
 
-Related paths: `eval-run.txt` in this directory; your skill's files in
-`tools/repro-check/`.
+Related paths: `eval-run.txt` in this directory; your skill's files in `tools/repro-check/`.
