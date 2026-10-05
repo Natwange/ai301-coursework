@@ -24,7 +24,7 @@ My plan is to update the section-detection patterns to allow leading whitespace 
 
 ---
 
-## Your branch
+## Branch
 
 **Branch**
 
@@ -126,14 +126,19 @@ My eval runs, in order:
 
 The final run matched 19 of 20 scored packages and had matches in every category.
 
-**Package analysis**
+Package analysis
+Package: pkg-14
+Gold label: accept
+My rubric verdict: reject
+The deciding check was diagnosis-supported. My rubric read the plan's diagnosis too strictly. The package said that on reattach, Zellij wires client input to the session before OSC color-query responses are consumed. The reproduction supported the important observations—fresh attach was clean, reattach leaked the responses, version 0.44.1 was clean, and clearing the cache temporarily changed the behavior—but it did not directly prove the exact internal ordering mechanism.
+My diagnosis-supported check required the proposed cause to be supported by the reproduced evidence and not claim a cause the reproduction did not establish. Because the plan stated the internal mechanism as fact rather than uncertainty, the rubric rejected it. The gold label accepted the package, so this remained the one disagreement in my final 19/20 run.
+Check rationale
+The check I chose is:
+diagnosis-supported | The plan's stated diagnosis/cause read against the issue description and Repro evidence, including the reproduced behavior and artifacts | The proposed cause is consistent with and supported by the reproduced evidence. It does not contradict the evidence or claim a cause the reproduction does not establish. | required
 
-Package: `pkg-14`
+I kept this check because I wanted the rubric to distinguish between a diagnosis that follows from reproduction evidence and one that merely sounds plausible. During evaluation, pkg-14 showed the trade-off in that wording: the observed behavior strongly suggested the proposed mechanism, but the reproduction did not directly establish the internal ordering the plan claimed. I chose to keep the requirement that a diagnosis not present an unestablished cause as fact rather than loosening the check just to turn that package into an accept.
+Trade-offs
+The main trade-off is that diagnosis-supported can reject a reasonable plan when the reproduction strongly supports a hypothesis but cannot directly prove the internal mechanism. pkg-14 demonstrates this: the gold label is accept, while my rubric returns reject because the plan states the reattach/OSC ordering mechanism more confidently than the reproduction establishes.
+I accepted that false-negative risk because loosening the check could also allow wrong-cause plans to pass when they fit the symptoms but are not grounded in the available evidence. My final run still matched all four wrong-cause packages and finished at 19/20 overall, so I kept the stricter evidence requirement.
 
-Gold label: `accept`
-
-My rubric verdict: `reject`
-
-The deciding check was `diagnosis-supported`. My rubric read the plan's diagnosis strictly because the package stated that on reattach, Zellij wires the client's input to the session before OSC color-query responses have been consumed. The reproduction established that fresh attaches were clean, reattaches leaked the responses, version 0.44.1 was clean, and clearing the cache temporarily changed the behavior. However, it did not directly establish the exact internal ordering mechanism.
-
-My `diagnosis-supported` check requires the proposed cause to be supported by the reproduced evidence and not claim a cause that the reproduction does not establish. Because the plan stated that internal mechanism as fact rather than as
+Related paths: plan.md and eval-run.txt in this directory; your skill's files in tools/plan-check/.
