@@ -2,12 +2,9 @@
 
 Path: `beat-1-sandbox/unit-3/plan-and-implement.md`
 
-Record of your plan, the branch you built it on, and the evaluation runs that produced
-`eval-run.txt`. This file is graded at the path above; a copy kept anywhere else in the
-repository is not read.
+Record of your plan, the branch you built it on, and the evaluation runs that produced `eval-run.txt`. This file is graded at the path above; a copy kept anywhere else in the repository is not read.
 
-Complete every labelled field below. Each is graded on its own; content placed under the wrong
-label is not graded.
+Complete every labelled field below. Each is graded on its own; content placed under the wrong label is not graded.
 
 ---
 
@@ -15,17 +12,15 @@ label is not graded.
 
 **GitHub username**
 
-[Your GitHub username, exactly as it appears on your profile - no @, no
-profile URL. Your comment upstream is identified by this name, and it is
-the only thing that ties it to you. Several students may plan the same
-house issue, so this is what keeps their comments off your score and
-yours off theirs.]
+Natwange
 
 **Plan comment**
 
-[Link to the comment where you posted your plan on the issue. Use the comment's own
-permalink. **Then paste the text of that comment underneath the link** — the pasted text is
-what this field is graded on, so copy across what you actually posted.]
+https://github.com/codepath/pathreview-ai301-fa26-s1/issues/54#issuecomment-5987378430
+
+I reproduced the leading-whitespace section detection issue and traced it to `_detect_sections()` in `ingestion/parsers/resume_parser.py`. The current patterns allow whitespace after a section name but expect the section name to begin immediately at the start of a line, so indented headings such as `Education:` and `Skills:` are not detected.
+
+My plan is to update the section-detection patterns to allow leading whitespace while preserving detection of non-indented headings. I'll keep the change limited to section detection and verify it by re-running the reproduction, the existing issue #54 tests, and a non-indented-heading control. Any unrelated parser or Markdown failures will remain out of scope.
 
 ---
 
@@ -33,47 +28,112 @@ what this field is graded on, so copy across what you actually posted.]
 
 **Branch**
 
-[The name of the branch you built the change on, exactly as it appears in your fork. The
-naming shape is a type prefix, then the issue number, then a short description. **The issue
-number in the branch name must be the number of the issue you claimed** — a name carrying
-any other number does not satisfy this field.]
+fix/54-leading-whitespace-sections
 
 **Evidence**
 
-[Your Unit 2 reproduction steps re-run against the built change: the before, then the
-after. Paste both, including the commands you ran and their output.]
+### Before
+
+Unit 2 reproduction:
+
+```python
+from ingestion.parsers.resume_parser import ResumeParser
+
+r = ResumeParser()
+
+res = r.parse("""
+    John Smith
+    john@example.com
+
+    Education:
+    - B.S. Computer Science
+
+    Skills: Python
+""")
+
+print(res.metadata["detected_sections"])
+```
+
+Output:
+
+```text
+[]
+```
+
+Before the fix, I also ran:
+
+```bash
+python -m pytest tests/unit/test_resume_parser.py -v
+```
+
+Output:
+
+```text
+5 passed, 5 xfailed
+```
+
+### After
+
+I re-ran the same reproduction against the built change:
+
+```python
+from ingestion.parsers.resume_parser import ResumeParser
+
+r = ResumeParser()
+
+res = r.parse("""
+    John Smith
+    john@example.com
+
+    Education:
+    - B.S. Computer Science
+
+    Skills: Python
+""")
+
+print(res.metadata["detected_sections"])
+```
+
+Output:
+
+```text
+['Education', 'Skills']
+```
+
+I then ran:
+
+```bash
+python -m pytest tests/unit/test_resume_parser.py -v
+```
+
+Output:
+
+```text
+10 passed in 1.25s
+```
 
 ## Eval iterations
 
-Answer all four sections. Quote source text directly; paraphrase does not satisfy these
-fields.
-
 **Run history**
 
-[The agreement score of each run you did, in order. A single run is a complete answer if
-only one run occurred. **The last score in your list must match the agreement line in the
-`eval-run.txt` you committed** — that file is the record of your final run.]
+My eval runs, in order:
+
+1. Partial smoke run (`--limit 3`): `agreement: 3/3 scored items`
+2. Full run: `agreement: 18/20 scored items (bar: 18/20: PASS)`
+3. Partial targeted run (`--only pkg-02,pkg-14,pkg-01,pkg-10`): `agreement: 3/4 scored items`
+4. Partial targeted run (`--only pkg-14`): `agreement: 0/1 scored items`
+5. Final full run: `agreement: 19/20 scored items (bar: 18/20: PASS)`
+
+The final run matched 19 of 20 scored packages and had matches in every category.
 
 **Package analysis**
 
-[Pick one scored package (`pkg-01` through `pkg-20` — the four `calib-` packages are never
-scored). Name it by id, say what your rubric decided and what the gold label said, and
-explain why your rubric read it that way.]
+Package: `pkg-14`
 
-**Check rationale**
+Gold label: `accept`
 
-[Quote one check from the `rubric.md` you uploaded to `tools/plan-check/`, exactly as it reads now.
-Then say why it reads that way — what you revised to get there, or what you rejected in
-favour of it.]
+My rubric verdict: `reject`
 
-**Trade-offs**
+The deciding check was `diagnosis-supported`. My rubric read the plan's diagnosis strictly because the package stated that on reattach, Zellij wires the client's input to the session before OSC color-query responses have been consumed. The reproduction established that fresh attaches were clean, reattaches leaked the responses, version 0.44.1 was clean, and clearing the cache temporarily changed the behavior. However, it did not directly establish the exact internal ordering mechanism.
 
-[Every check gives something up. Any one of these is a complete answer: a package whose
-result it changes, a canary you re-ran with `--only`, a case you accept it will miss, or a
-stated reason nothing changed elsewhere. "Nothing changed, and here is how I know" earns
-the point in full when the reason follows.]
-
----
-
-Related paths: `plan.md` and `eval-run.txt` in this directory; your skill's files in
-`tools/plan-check/`.
+My `diagnosis-supported` check requires the proposed cause to be supported by the reproduced evidence and not claim a cause that the reproduction does not establish. Because the plan stated that internal mechanism as fact rather than as
