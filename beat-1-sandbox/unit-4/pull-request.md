@@ -15,15 +15,11 @@ label is not graded.
 
 **Pull request**
 
-[Link to the pull request you opened. It must be the pull request's own page on the Path
-Review repo, not your fork's branch page.]
+https://github.com/codepath/pathreview-ai301-fa26-s1/pull/159
 
 **Branch**
 
-[The name of the branch the pull request comes from, exactly as it appears in your fork.
-The naming shape is a type prefix, then the issue number, then a short description. **The
-issue number in the branch name must be the number of the issue the pull request fixes** —
-a name carrying any other number does not satisfy this field.]
+fix/54-leading-whitespace-sections
 
 ## Eval iterations
 
@@ -32,28 +28,50 @@ fields.
 
 **Run history**
 
-[The agreement score of each run you did, in order. A single run is a complete answer if
-only one run occurred. **The last score in your list must match the agreement line in the
-`eval-run.txt` you committed** — that file is the record of your final run.]
+- Final complete evaluation: **20/20 agreement (PASS)**, exceeding the required 18/20.
+- Model: Claude Sonnet.
+- All 20 scored packages were evaluated.
+- The final result is recorded in `beat-1-sandbox/unit-4/eval-run.txt`.
 
 **Package analysis**
 
-[Pick one scored package (`pkg-01` through `pkg-20` — the four `calib-` packages are never
-scored). Name it by id, say what your rubric decided and what the gold label said, and
-explain why your rubric read it that way.]
+**Package:** `pkg-04` — `sharkdp/bat#3833`
+
+**Gold label:** `reject`
+
+**My skill's verdict:** `reject`
+
+The PR addresses a Windows paging color issue by adding the `--RAW-CONTROL-CHARS` flag when the version of `less` cannot be identified. The implementation follows the plan, includes a unit test, and adds a changelog entry.
+
+However, the test evidence only states:
+
+> Tested locally on Windows 11 with less-Windows: colors work now in paging mode. `cargo test` passes.
+
+My rubric rejects this because the evidence does not provide the actual reproduction output or detailed test results. The `observable-test-evidence` check requires verifiable evidence rather than unsupported claims that testing succeeded. This explains why the skill's rejection agrees with the gold label.
 
 **Check rationale**
 
-[Quote one check from the `rubric.md` you uploaded to `tools/pr-precheck/`, exactly as it reads now.
-Then say why it reads that way — what you revised to get there, or what you rejected in
-favour of it.]
+**Check:** `repository-checks`
+
+**Exact rubric wording:**
+
+> Required checks have recorded outcomes, or any unavailable, failing, or unrun checks are explicitly disclosed with a reason. A known failing check is not automatically disqualifying when its limitation is honestly documented.
+
+**Rationale:**
+
+I designed this check to distinguish between missing test evidence and honestly reported testing limitations. A PR should not be accepted if it falsely claims that tests passed, but an environment-related failure should not automatically cause rejection when the results are clearly documented.
+
+I chose this approach because my goal was to evaluate whether a PR is ready for review based on its implementation, evidence, and transparency rather than requiring every local check to pass regardless of circumstances.
 
 **Trade-offs**
 
-[Every check gives something up. Any one of these is a complete answer: a package whose
-result it changes, a canary you re-ran with `--only`, a case you accept it will miss, or a
-stated reason nothing changed elsewhere. "Nothing changed, and here is how I know" earns
-the point in full when the reason follows.]
+I made the rubric strict about observable testing evidence because a PR can appear complete while its testing claims are difficult to verify.
+
+The trade-off is that this can reject a legitimate fix when the developer tested it successfully but provided only a brief summary of the results.
+
+For example, `pkg-04` reports that Windows paging colors work and `cargo test` passes, but it does not include the actual output. My rubric rejects it because the supporting evidence is insufficient.
+
+I accept this trade-off because the skill is intended to check submission readiness, including whether reviewers have enough evidence to evaluate the change.
 
 ---
 
