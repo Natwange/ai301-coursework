@@ -1,25 +1,10 @@
-# Contribution: [Issue Title]
+# Contribution: Studio recorder: unit tests for the event-to-ProbeScript mapping
 
-Path: `beat-2-contribution/contribution-story.md`
-
-This file is Assignment 5, and it is graded at the path above; a copy kept anywhere else in
-the repository is not read. **Keep every section header below under its exact name** — the
-format criteria grade exactly that. Your course repo link is the whole submission: no tool
-files and no evidence uploads are part of Assignment 5.
-
-**Contribution Number:** [1]
-**Student:** [Student name]
-**GitHub Username:** [your GitHub username, exactly as it appears on your profile - no @, no
-profile URL. Your comments upstream are identified by this name.]
-**Issue:** [GitHub issue link]
-**Pull Request:** [GitHub PR link, once opened]
-
-One repository, built across units 5 to 8, telling the whole story of your real
-contribution. Fill it as you work, not at the end — the sections below ask for evidence that
-is far easier to write down as it happens than to reconstruct in the last weekend.
-
-Contribution Number stays `[1]` unless you make more than one contribution this term; it
-just numbers them.
+**Contribution Number:** 1
+**Student:** Natwange Chiwele
+**GitHub Username:** Natwange
+**Issue:** https://github.com/AlphaWaveSystems/flutter-probe/issues/404
+**Pull Request:** Not opened yet
 
 ---
 
@@ -55,10 +40,9 @@ happened; these entries are the toolkit's own timeline.
 All four entries are graded. Keep every heading below, and fill each
 one in the week it belongs to.
 
-**Unit 5: [one line on the tool work]**
+**Unit 5: Built and refined my issue-scout skill**
 
-[2-4 sentences: what you built (the scout, your strategy), what broke
-or fell short, what changed because of it.]
+I configured Claude Code's issue-scout skill with my programming experience, project interests, search strategy, and grading rubric. My initial scan returned 300 issues but produced candidates from only two repositories, limiting the variety of results. I updated the search strategy to limit candidates from each repository and check for existing pull requests. When I graded issues individually, the scout accepted Flutter Probe #404 and rejected Red Discord Bot #6794 because four open pull requests were already addressing it.
 
 **Unit 6: [one line on the tool work]**
 
