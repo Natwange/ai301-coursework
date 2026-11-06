@@ -64,24 +64,18 @@ drafted, what you did with the draft.]
 
 ## Why I Chose This Issue
 
-[1-2 paragraphs in your own words: how you searched, what your scan
-surfaced, what your scout's verdict said, why this issue fits your
-profile, and what you hope to learn. If your scout's verdict on it
-was reject and you chose it anyway, say so here and say why; choosing
-against your own tool silently is what loses points. Close with an
-honest read of the tool itself: where the scout fell short on a real
-wild search and what you changed or would change, or what convinced
-you it held up. **Record the link to your claim comment in this section too.**
-Not claimed yet? Write `claim pending` and today's date where the link goes,
-and add the link the moment your claim lands.]
+I searched for open-source issues using my issue-scout tool and reviewed the results for clear, manageable contributions. My initial search surfaced several possibilities, but some were already being addressed by other contributors. I eventually found [Flutter Probe issue #404](https://github.com/AlphaWaveSystems/flutter-probe/issues/404), which asks for unit tests covering the conversion of recorded events into ProbeScript. After updating my scout's rubric and regrading the issue, it returned an **ACCEPT** verdict with a **straightforward** difficulty rating. I chose this issue because it has a clearly defined scope, involves testing and code analysis, and gives me an opportunity to strengthen my open-source contribution skills while learning more about Go.
+
+The search also exposed a weakness in my issue-scout tool: its original rubric favored beginner-friendly issues rather than evaluating whether the work was actually feasible. I replaced that preference with a required `scope-feasible` check and added difficulty ratings that do not affect acceptance. This made the evaluation more useful because a challenging issue should not automatically be rejected if its scope is clear. I hope to learn how to navigate an unfamiliar codebase, write meaningful table-driven tests, and follow a project's contribution guidelines.
+
+**Claim comment:** https://github.com/AlphaWaveSystems/flutter-probe/issues/404#issuecomment-6691326859
 
 **Toolkit**
 
-- Tool: issue-scout (your scout: your search strategy, your rubric),
-  and how you used it
-- What it produced: [the scan and its verdict on this issue, described]
-- Difficulties: [where it fell short, or "none met" if none did]
-- What changed: [what you patched or would update, or "nothing"]
+- **Tool:** issue-scout — I used my custom search strategy and rubric to evaluate open-source issues, then regraded Flutter Probe #404 after updating the rubric.
+- **What it produced:** The initial scan surfaced several candidates. After regrading, issue #404 received an **ACCEPT** verdict with a **straightforward** difficulty rating.
+- **Difficulties:** The original rubric favored beginner-friendly issues, which could exclude valid contributions with clear scopes. Another candidate was already being addressed by multiple pull requests.
+- **What changed:** I replaced `scope-fits` with a required `scope-feasible` check and added difficulty ratings that describe complexity without affecting the verdict.
 
 ---
 
