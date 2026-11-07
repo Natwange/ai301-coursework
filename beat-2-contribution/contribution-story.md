@@ -44,11 +44,9 @@ one in the week it belongs to.
 
 I configured Claude Code's issue-scout skill with my programming experience, project interests, search strategy, and grading rubric. My initial scan returned 300 issues but produced candidates from only two repositories, limiting the variety of results. I updated the search strategy to limit candidates from each repository and check for existing pull requests. When I graded issues individually, the scout accepted Flutter Probe #404 and rejected Red Discord Bot #6794 because four open pull requests were already addressing it.
 
-**Unit 6: [one line on the tool work]**
+**Unit 6: Built a voice guard and repository memory file**
 
-[2-4 sentences: the voice-guard, the repo-memory file. What broke or
-fell short, and what changed because of it. "Nothing broke" counts when
-it is true - say how you know.]
+I installed a Claude Code voice guard to check outgoing GitHub comments against my writing rules before posting. The guard initially failed because its Python subprocess could not launch Claude through the Windows command wrapper, so I updated it to use `claude.cmd` and confirmed that my claim draft passed. I also created a local repository memory file for Flutter Probe, documenting contribution rules, recorder-related files, existing tests, and testing commands. During orientation, I discovered that other contributors had already implemented some of the tests requested in issue #404, so I narrowed my planned work to the remaining test gaps.
 
 **Unit 7: [one line on the tool work]**
 
