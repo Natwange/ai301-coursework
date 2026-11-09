@@ -108,31 +108,60 @@ The search also exposed a weakness in my issue-scout tool: its original rubric f
 
 **Environment Setup**
 
-[What a stranger would need to stand this up: your operating system,
-the relevant versions (language, runtime, package manager, the project
-itself), and how you set the project up. Then the challenges you faced
-and how you solved them, or that none came up.]
+- **OS:** Windows 11 Pro 10.0.26200
+- **Go:** 1.27.3 windows/amd64
+- **Project:** AlphaWaveSystems/flutter-probe, `main` at `e80270e`, clean working tree
+- **Package manager:** npm, used to build the Studio frontend
+
+The `studio/` directory is its own Go module, joined to the root module through `go.work`. `studio/main.go` embeds the built frontend (`frontend/dist`), so the Go package will not compile until the frontend has been built. Before running any Go tests, I ran these commands in `studio/frontend`, and both succeeded:
+
+```
+npm ci --no-audit --no-fund
+npm run build
+```
+
+The main challenge was choosing a test filter. A `-run` pattern using `Recorder` missed `TestRecordedTextStaysOnOneLine`, so I used `Recorde` instead. Running the full suite with `go test ./...` on Windows also showed failures unrelated to the recorder (Unix-only syscalls in `studio/e2e`, a URL-token discovery-file permission test, and symlink tests that need admin rights or Developer Mode). Several failures appear related to Windows platform differences, but the URL-token permission failure was not fully investigated. I kept my reproduction focused on the recorder tests.
 
 **Steps to Reproduce**
 
-1. [Step 1]
-2. [Step 2]
-3. [Observed result]
+1. Clone flutter-probe and check out `main` (`e80270e`).
+2. In `studio/frontend`, run `npm ci --no-audit --no-fund` and then `npm run build`.
+3. From `studio/`, run the focused recorder tests:
+
+   ```
+   go test -count=1 -v -run 'Recorde|EventToProbeScript|Obscured|PlainType' .
+   ```
+
+4. Compare the existing tests in `studio/recorder_test.go` and `studio/recorder_obscured_test.go` against the three acceptance criteria in issue #404.
+5. **Observed result:** all existing recorder tests pass, but several acceptance criteria in #404 are not yet covered by any test.
 
 **Reproduction Evidence**
 
-- **Commit showing reproduction:** [link to commit in your fork]
-- **Screenshots/logs:** [if applicable]
-- **My findings:** [what you discovered during reproduction; an
-  honest, evidenced cannot-reproduce that led you to re-pick or ask
-  the maintainer belongs here and costs you nothing]
+- **Commit showing reproduction:** none
+- **Screenshots/logs:** excerpt of the focused test run:
+
+  ```
+  --- PASS: TestRedactTreeHidesObscuredAndSecretFields
+  --- PASS: TestObscuredTypeEventWritesNoTypeStep
+  --- PASS: TestPlainTypeEventKeepsItsText
+  --- PASS: TestEventToProbeScriptLine
+  --- PASS: TestRecordedTextStaysOnOneLine
+  ok  github.com/alphawavesystems/flutter-probe/studio
+  ```
+
+- **My findings:** Issue #404 is about missing test coverage, not a failing behavior, so "reproducing" it meant confirming which acceptance criteria are still untested. Some recorder tests were added by other contributors after #404 was opened, and they all pass. Checked against the three criteria:
+  1. **Event kinds × selector choices — partly met.** Tap is tested with every selector choice. Long press and see are tested only with a text selector, and input (`type`) only with an id selector or no target. The `params["id"]` fallback and the empty-selector fall-through cases are not tested for any event kind.
+  2. **Sanitizing quotes, backslashes, and control characters — mostly not met.** Only CR/LF flattening in selector text is tested. Quotes, backslashes, tabs, and other control characters have no tests.
+  3. **Every generated line parses with `internal/parser` — not met.** No recorder test imports the parser, although `studio/run_scope_test.go` shows that a Studio test can import it.
+
+  Based on this, I narrowed my planned work to the remaining gaps rather than the full original scope of the issue.
 
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
+- **Tool:** Claude Code's repro-check skill. I used it to grade my claim comment and reproduction report against issue #404 before posting anything upstream.
+- **What it produced:** A graded verdict on whether the reproduction package was ready to post. My first draft was rejected; after revisions, the final package received a **5/5 ACCEPT** verdict.
+- **Difficulties:** The first draft was rejected because it raised public security-disclosure concerns: it described possible problems in more detail than is appropriate for a public issue thread.
+- **What changed:** I revised the reproduction report to match the issue's exact acceptance criteria, distinguish existing test coverage from missing coverage, and document the Windows test limitations accurately. After the initial rejection, I removed potentially security-sensitive details from the public-facing report and clarified which experimental findings had not been independently reproduced. The revised report passed repro-check with a 5/5 ACCEPT verdict.
 
 ---
 
